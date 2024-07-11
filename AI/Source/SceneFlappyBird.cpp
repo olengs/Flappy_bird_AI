@@ -6,7 +6,7 @@
 #include <algorithm>
 
 constexpr int INPUTSIZE = 4;
-constexpr int HIDDENSIZE = 4;
+constexpr int HIDDENSIZE = 10;
 
 static std::vector<GameObject*> birds;
 
@@ -97,8 +97,8 @@ void SceneFlappyBird::RandomizeWeight(GameObject* go)
 	go->hiddenNode.resize(HIDDENSIZE);
 	for (size_t i = 0; i < go->hiddenNode.size(); ++i)
 	{
-		go->hiddenNode[i].weights.resize(HIDDENSIZE + 1); //+1 accounting for bias
-		for (size_t j = 0; j < HIDDENSIZE + 1; ++j)
+		go->hiddenNode[i].weights.resize(INPUTSIZE + 1); //+1 accounting for bias
+		for (size_t j = 0; j < INPUTSIZE + 1; ++j)
 		{
 			go->hiddenNode[i].weights[j] = Math::RandFloatMinMax(-1.f, 1.f);
 		}
@@ -109,8 +109,8 @@ void SceneFlappyBird::RandomizeWeight(GameObject* go)
 	go->hiddenNode2.resize(HIDDENSIZE);
 	for (size_t i = 0; i < go->hiddenNode2.size(); ++i)
 	{
-		go->hiddenNode2[i].weights.resize(INPUTSIZE + 1); //+1 accounting for bias
-		for (size_t j = 0; j < INPUTSIZE + 1; ++j)
+		go->hiddenNode2[i].weights.resize(HIDDENSIZE + 1); //+1 accounting for bias
+		for (size_t j = 0; j < HIDDENSIZE + 1; ++j)
 		{
 			go->hiddenNode2[i].weights[j] = Math::RandFloatMinMax(-1.f, 1.f);
 		}
@@ -329,7 +329,7 @@ void SceneFlappyBird::Update(double dt)
 	}
 
 	//To control the time between each pipe spawn
-	m_spawnReducerTimer += dt * m_speed;
+	m_spawnReducerTimer += dt* m_speed;
 	if (m_spawnReducerTimer >= m_spawnReduceTime)
 	{
 		m_spawnReducerTimer = 0;
@@ -398,7 +398,7 @@ float SceneFlappyBird::FeedNN(GameObject* go, std::vector<float>& inputList)
 	for (int i = 0; i < HIDDENSIZE; ++i) {
 		input1.push_back(go->hiddenNode[i].output);
 	}
-	input1.push_back(1.f);
+	input1.push_back(0.f);
 
 	for (NNode& L2Node : go->hiddenNode2) {
 		L2Node.z = L2Node.weights * input1;
